@@ -1,0 +1,23 @@
+<html>
+<head>
+{% load i18n %}
+{% load allauth %}
+<title>
+    {% trans "Social Network Login Failure" %}
+</title>
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/acesso.css' %}">
+<script src="https://kit.fontawesome.com/ccaafbad32.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div class="container">
+    {% block content %}
+        <div class="auth-mark">G2P</div>
+        {% element h1 %}
+            {% trans "Social Network Login Failure" %}
+        {% endelement %}
+        <p>{% trans "An error occurred while attempting to login via your social network account." %}</p>
+    {% endblock content %}
+    </div>
+</body>
+</html>

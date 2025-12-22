@@ -1,0 +1,39 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Logout</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        {% load allauth i18n %}
+        {% load static %}
+        <link rel="stylesheet" href="{% static 'css/acesso.css' %}">
+    </head>
+    <body>
+        <div class="container">
+        {% block content %}
+            <div class="auth-mark">G2P</div>
+            {% element h1 %}
+                {% trans "Logout" %}
+            {% endelement %}
+            <p>{% trans 'Are you sure you want to exit?' %}</p>
+            {% url 'account_logout' as action_url %}
+            {% element form method="post" action=action_url no_visible_fields=True %}
+                {% slot body %}
+                    {% csrf_token %}
+                    {% if redirect_field_value %}
+                        <input type="hidden"
+                            name="{{ redirect_field_name }}"
+                            value="{{ redirect_field_value }}" />
+                    {% endif %}
+                {% endslot %}
+                {% slot actions %}
+                    <button type="submit" class="btn">
+                        {% trans 'Logout' %}
+                    </button>
+                {% endslot %}
+            {% endelement %}
+        {% endblock content %}
+        </div>
+    </body>
+</html>
+

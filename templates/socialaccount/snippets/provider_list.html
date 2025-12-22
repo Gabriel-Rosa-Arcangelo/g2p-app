@@ -1,0 +1,70 @@
+{% load allauth socialaccount %}
+
+<style>
+    .social-media{
+        display: flex;
+        justify-content: center;
+        margin-left: 0px;
+        padding-right: -30px;
+        border: none;
+        border-radius: 30px;
+        background-color: #f8a464;
+    }
+
+    .social-media:hover{
+        background-color: #f5822b;
+    }
+    
+    .social-icon{
+        width: 56px;
+        height: 46px;
+        margin: 0 3rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-decoration: none;
+        color: #333;
+        font-size: 1.1rem;
+        transition: 0.3s;
+        color:white;
+        font-size: 1.5em;
+    }
+
+    @media only screen and (max-width: 375px) {
+        .social-media{
+            width: 100px;
+        }
+    
+    }
+
+</style>
+{% get_providers as socialaccount_providers %}
+
+{% if socialaccount_providers %}
+
+    {% element provider_list %}
+        {% for provider in socialaccount_providers %}
+            {% if provider.id == "openid" %}
+                {% for brand in provider.get_brands %}
+                    {% provider_login_url provider openid=brand.openid_url process=process as href %}
+                    {% element provider name=brand.name provider_id=provider.id href=href %}
+                    {% endelement %}
+                {% endfor %}
+            {% endif %}
+            {% provider_login_url provider process=process scope=scope auth_params=auth_params as href %}
+            
+            <!--{% element provider name=provider.name provider_id=provider.id href=href %}
+            {% endelement %}-->
+
+            <div class="social-media">
+                <a title="Google" href="/accounts/google/login/?process=login" class="social-icon">
+                    <i class="fa-brands fa-google-plus-g"></i>
+                </a>
+            </div>
+
+
+        {% endfor %}
+    {% endelement %}
+
+{% endif %}
+

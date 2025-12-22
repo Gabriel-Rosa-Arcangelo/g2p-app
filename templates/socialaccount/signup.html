@@ -1,0 +1,54 @@
+{% load i18n %}
+{% load allauth %}
+{% load static %}
+
+<title>{% trans "Signup" %}</title>
+<link rel="stylesheet" href="{% static 'css/acesso.css' %}">
+<script src="https://kit.fontawesome.com/ccaafbad32.js" crossorigin="anonymous"></script>
+
+<div class="container">
+    <div class="auth-mark">G2P</div>
+    <h1>{% trans "Sign Up" %}</h1>
+    <p>
+        {% blocktrans with provider_name=account.get_provider.name site_name=site.name %}
+            You are about to use your {{provider_name}} account to login to {{site_name}}. As a final step, please complete the following form:
+        {% endblocktrans %}
+    </p>
+
+    <form method="post" action="{% url 'socialaccount_signup' %}">
+        {% csrf_token %}
+
+        <center>
+            <div class="input-field">
+                <i class="fa-solid fa-envelope"></i>
+                <input type="email" name="email" value="gabriel.arcangelo@usp.br" placeholder="Email address" autocomplete="email" maxlength="320" required id="id_email">
+            </div>
+        </center>
+
+        <center>
+            <div class="input-field">
+                <i class="fas fa-user"></i>
+                <input type="text" name="username" placeholder="Username" autocomplete="username" minlength="1" maxlength="150" required id="id_username">
+            </div>
+        </center>
+
+        <button type="submit" class="btn">{% trans "Sign Up" %}</button>
+
+        {% if redirect_field_value %}
+            <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}">
+        {% endif %}
+    </form>
+
+    {% if form.errors %}
+        <div class="error-message">
+            <ul>
+                {% for error in form.errors.values %}
+                    {% for err in error %}
+                        <li>{{ err }}</li>
+                    {% endfor %}
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+</div>
+

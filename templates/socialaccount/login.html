@@ -1,0 +1,40 @@
+</html>
+    <head>
+        {% load i18n %}
+        {% load allauth %}
+        {% load static %}
+        <title>{% trans "Google" %}</title>
+        <link rel="stylesheet" href="{% static 'css/acesso.css' %}">
+    </head>
+
+    <body>
+        {% block content %}
+            {% if process == "connect" %}
+                {% element h1 %}
+                    {% blocktrans with provider.name as provider %}Connect {{ provider }}{% endblocktrans %}
+                {% endelement %}
+                <p>
+                    {% blocktrans with provider.name as provider %}You are about to connect a new third-party account from {{ provider }}.{% endblocktrans %}
+                </p>
+            {% else %}
+
+                <div class="container">
+                        <div class="auth-mark">G2P</div>
+                        <h1>
+                            {% blocktrans with provider.name as provider %}Connect Via {{ provider }}{% endblocktrans %}
+                        </h1>
+                        <p>
+                            {% blocktrans with provider.name as provider %}You are about to log in using a third-party account from {{ provider }}.{% endblocktrans %}
+                        </p>
+                    {% endif %}
+                    {% element form method="post" no_visible_fields=True %}
+                        {% slot actions %}
+                            {% csrf_token %}
+                            <button type="submit" class="btn">Continue</button>
+                        {% endslot %}
+                    {% endelement %}
+                </div>
+            
+        {% endblock content %}
+    </body>
+</html>

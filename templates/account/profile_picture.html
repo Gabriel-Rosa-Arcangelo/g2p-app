@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Profile Picture</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/acesso.css' %}">
+    <script src="https://kit.fontawesome.com/ccaafbad32.js" crossorigin="anonymous"></script>
+    <style>
+        .circle {
+            background-size: cover;
+            background-position: center;
+        }
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            /*overflow-y: auto;*/
+        }
+        .container2 {
+            height: 100%;
+            overflow-y: auto;
+        }
+        .instruction {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 14px;
+            color: #333;
+        }
+        .success-message {
+            text-align: center;
+            margin-top: 20px;
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <div class="container2">
+        <div class="auth-mark">G2P</div>
+        <h2 class="h2ft">Upload Profile Picture</h2>
+        <div class="profile-picture">
+            <label for="picture" class="circle">
+                <input type="file" id="picture" name="picture" accept="image/png, image/jpeg" onchange="previewImage(this)">
+                <img id="preview" src="{% static 'images/default_profile_picture.jpg' %}">
+                <div class="overlay">
+                    <p>Upload</p>
+                </div>
+                <i class="fas fa-solid fa-cloud-arrow-up"></i> 
+            </label>
+        </div>
+
+        <p>Please upload a profile picture to proceed.</p>
+        <form id="upload-form" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <span id="error-message" class="error-message"></span>
+            <span id="success-message" class="success-message" style="display: none;"></span>
+            <button type="button" class="btn" id="startButton">Start</button>
+            <button type="button" class="btn-skip" id="skipButton">
+                <i class="fas fa-solid fa-forward"></i>
+            </button>
+        </form>
+    </div>
+
+    <script>
+        var csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    </script>
+    
+
+    <script>
+        function previewImage(input) {
+            var error = document.getElementById('error-message');
+            var circle = document.querySelector('.circle');
+            var icon = document.querySelector('.fa-cloud-arrow-up'); 
+        
+            if (input.files && input.files[0]) {
+                var fileSize = input.files[0].size;
+                var maxSize = 5 * 1024 * 1024;
+        
+                if (fileSize > maxSize) {
+                    error.innerText = "File size exceeds 5 MB limit.";
+                    error.style.display = 'block';
+                    input.value = '';
+                    circle.style.backgroundImage = 'url("{% static "images/default_profile_picture.jpg" %}")';
+                } else if (!input.files[0].type.startsWith('image')) {
+                    error.innerText = "File must be an image.";
+                    error.style.display = 'block';
+                    input.value = '';
+                    circle.style.backgroundImage = 'url("{% static "images/default_profile_picture.jpg" %}")';
+                } else {
+                    var reader = new FileReader();
+        
+                    reader.onload = function(e) {
+                        circle.style.backgroundImage = 'url("' + e.target.result + '")';
+                        error.innerText = "";
+                        error.style.display = 'none';
+                        icon.style.display = 'none'; 
+                    }
+        
+                    reader.readAsDataURL(input.files[0]);
+                }
+            }
+        }
+
+        function redirectTo(url) {
+            window.location.href = url;
+        }
+
+        document.getElementById('startButton').addEventListener('click', function() {
+            var pictureInput = document.getElementById('picture');
+            if (!pictureInput.value) {
+                var error = document.getElementById('error-message');
+                error.innerText = "Please upload a profile picture before starting.";
+                error.style.display = 'block';
+                return;
+            }
+
+            // Enviar a imagem para o backend (Django) usando AJAX
+            var formData = new FormData();
+            formData.append('picture', pictureInput.files[0]);
+
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '{% url "picture" %}', true);
+ 
+            xhr.setRequestHeader('X-CSRFToken', csrftoken);
+ 
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    // Se o upload for bem-sucedido, exibir mensagem de sucesso e redirecionar o usuário após alguns segundos
+                    var successMessage = document.getElementById('success-message');
+                    successMessage.innerText = "Profile picture uploaded successfully.";
+                    successMessage.style.display = 'block';
+                    setTimeout(function() {
+                        redirectTo('/accounts/home/');
+                    }, 2000);
+                } else {
+                    // Se houver um erro durante o upload, exibir uma mensagem de erro
+                    var error = document.getElementById('error-message');
+                    error.innerText = "Error uploading picture.";
+                    error.style.display = 'block';
+                }
+            };
+            xhr.send(formData);
+        });
+
+        document.getElementById('skipButton').addEventListener('click', function() {
+            redirectTo('/accounts/home/');
+        });
+
+    </script>
+    
+</body>
+</html>
+
+
+
+
+
+
+
+

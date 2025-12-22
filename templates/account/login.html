@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://kit.fontawesome.com/ccaafbad32.js" crossorigin="anonymous"></script>
+        <title>Login</title>
+        {% load allauth i18n %}
+        {% load allauth account %}
+        {% load static %}
+        <link rel="stylesheet" href="{% static 'css/padrao.css' %}">
+        <script src="{% static 'js/eye.js' %}"></script>
+    </head>
+
+    <body>
+
+        <div class="container">
+
+            <div class="forms-container" style="margin-top: 60px">
+
+                    {% url 'account_login' as login_url %}
+                    {% element form form=form method="post" action=login_url tags="entrance,login" class="sign-up-form" %}
+                        {% slot body %}
+                            {% csrf_token %}
+
+                            <div class="auth-mark">G2P</div>
+                            <h2 class="title">{% trans "Log in to your account" %}</h2>
+                            <p class="basic-text">
+                                {% blocktrans %}If you don't have an account yet,
+                                <a href="{{ signup_url }}">sign up</a>{% endblocktrans %}
+                            </p>
+                            
+                            
+                            <div class="input-field">
+                                <i class="fas fa-user"></i>
+                                <input type="text" id="username" placeholder="Username" name="login" maxlength="150" required id="id_login">
+                            </div>
+
+                            <div class="input-field">
+                                <i class="fas fa-lock"></i>
+                                <input type="password" id="id_password" placeholder="Password" name="password" required>
+                                <i class="fa-solid fa-eye eye" id="btn-eye" onclick="mostrarSenha()"></i>
+                            </div>
+
+                            <span class="helptext" id="id_password_helptext"><a href="/accounts/password/reset/">Forgot your password?</a></span>
+
+                            {{ form.captcha }}
+
+                            {% if redirect_field_value %}
+                                <input type="hidden"
+                                    name="{{ redirect_field_name }}"
+                                    value="{{ redirect_field_value }}"/>
+                            {% endif %}
+                        {% endslot %}
+
+                        
+
+                        {% slot actions %}
+                            {% slot actions %}
+                            <div class="button-and-social">
+                                <button type="submit" class="btn-login btn solid">Log in</button>
+                                {% if SOCIALACCOUNT_ENABLED %}
+                                {% include "socialaccount/snippets/login.html" with page_layout="entrance" %}
+                                {% endif %}
+                            </div>
+                            {% endslot %}
+                        {% endslot %}
+
+                    {% endelement %}
+
+                    {% if form.errors %}
+                        <div class="error-message">
+                            <ul>
+                                {% for error in form.errors.values %}
+                                    {% for err in error %}
+                                        <li>{{ err }}</li>
+                                    {% endfor %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                
+            </div>
+
+            <div class="lateral-container">
+                <img src="{% static 'images/1.png' %}" class="image">
+                <!--<input type="submit" value="Cadastrar" class="btn-lateral">-->
+                
+            </div>
+
+        </div>
+</html>

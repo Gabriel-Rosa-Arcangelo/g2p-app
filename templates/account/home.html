@@ -1,0 +1,86 @@
+{% include 'account/partials/nav.html' with titulo="Home"%}
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+<script src="https://kit.fontawesome.com/ccaafbad32.js" crossorigin="anonymous"></script>
+
+<main class="page-shell">
+  <header class="page-hero">
+    <div class="hero-copy">
+      <p class="eyebrow">Dashboard</p>
+      <h1>Geno2Pheno submissions at a glance</h1>
+      <p class="lede">Track the latest activity, quickly see uploads, and jump to actions without hunting through menus.</p>
+      <div class="hero-actions">
+        <a class="pill primary" href="{% url 'submit' %}">New upload</a>
+        <a class="pill ghost" href="{% url 'results' %}">View results</a>
+      </div>
+    </div>
+    <div class="hero-panel">
+      <p class="panel-title"><i class="fa-solid fa-signal"></i> Quick stats</p>
+      <ul>
+        <li><span class="label">Recent activities</span><span class="value">{{ user_activities|length }}</span></li>
+        <li><span class="label">Latest samples</span><span class="value">{{ samples|length }}</span></li>
+        <li><span class="label">Status</span><span class="status-chip">Prototype</span></li>
+      </ul>
+    </div>
+  </header>
+
+  <section class="grid">
+    <div class="panel history">
+      <div class="panel-head">
+        <i class="fa-solid fa-clock-rotate-left"></i>
+        <div>
+          <p class="eyebrow">Activity</p>
+          <h2>Recent actions</h2>
+        </div>
+      </div>
+      <div class="panel-body">
+        <ul class="list">
+          {% for activity in user_activities %}
+            <li>
+              <p class="meta">{{ activity.timestamp }}</p>
+              <p class="body">{{ activity.description }}</p>
+            </li>
+          {% empty %}
+            <li class="empty">No activity yet.</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+
+    <div class="panel samples">
+      <div class="panel-head">
+        <i class="fa-solid fa-vial-virus"></i>
+        <div>
+          <p class="eyebrow">Uploads</p>
+          <h2>Latest samples</h2>
+        </div>
+      </div>
+      <div class="panel-body">
+        <ul class="list">
+          {% for sample in samples %}
+            <li>
+              <p class="meta">{{ sample.created_at }}</p>
+              <p class="body">{{ sample.fasta_file_name }} <span class="muted">({{ sample.fasta_file_size }} bytes)</span></p>
+            </li>
+          {% empty %}
+            <li class="empty">No samples submitted yet.</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+
+    <div class="panel documentation">
+      <div class="panel-head">
+        <i class="fa-solid fa-book"></i>
+        <div>
+          <p class="eyebrow">Docs</p>
+          <h2>How this works</h2>
+        </div>
+      </div>
+      <div class="panel-body">
+        <p class="body">Upload .fas/.fa/.fna/.fasta files, the pipeline sends them to Geno2Pheno, and returns the generated .fas, .fasta, .pdf, and .csv outputs. Settings let you manage your profile and report issues.</p>
+        <a class="pill ghost" href="{% url 'submit' %}">Go to Submit</a>
+      </div>
+    </div>
+  </section>
+</main>

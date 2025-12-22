@@ -1,0 +1,113 @@
+{% include 'account/partials/nav.html' with titulo="Results" %}
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'css/results.css' %}">
+<script src="https://kit.fontawesome.com/ccaafbad32.js" crossorigin="anonymous"></script>
+
+<main class="page-shell results-page">
+    <header class="page-header">
+        <div class="header-copy">
+            <p class="eyebrow">Results</p>
+            <h1>Your generated reports</h1>
+            <p class="lede">Browse folders, download PDFs/CSVs, or clear out old runs. Use batch actions to save time.</p>
+        </div>
+        {% if not folder_path %}
+        <form method="GET" action="{% url 'results' %}" class="search-bar">
+            <input type="text" name="search" placeholder="Search folder..." value="{{ search_query }}">
+            <button class="btn" type="submit"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
+        </form>
+        {% endif %}
+    </header>
+
+    <section class="panel actions-panel">
+        <form method="POST" action="{% url 'batch_action_results' %}">
+            {% csrf_token %}
+            <div class="filter-bar">
+                <div class="select-wrap">
+                    <label for="batch-action">Batch action</label>
+                    <select name="batch_action" id="batch-action">
+                        <option value="">Choose...</option>
+                        <option value="download">Download</option>
+                        <option value="delete">Delete</option>
+                    </select>
+                </div>
+                <button type="button" id="all" onclick="selectAll()">Toggle all</button>
+                <button type="submit" name="execute_batch_action" class="btn danger" onclick="return confirmAction();">Run</button>
+            </div>
+
+            {% if not subfolders and not files %}
+                <div class="no-results-message">
+                    No matches found...
+                </div>
+            {% else %}
+                <div class="folders-wrapper">
+                    {% for folder in subfolders %}
+                        {% with new_folder_path=folder_path|add:folder|add:'/' %}
+                        <div class="folder-box">
+                            <input class="check" type="checkbox" name="selected_folders[]" value="{{ folder }}">
+                            <a href="{% url 'results_with_path' new_folder_path %}">
+                                <i class="fa-solid fa-folder"></i>
+                                <div class="folder-meta">
+                                    <span class="folder-name">{{ folder }}</span>
+                                    <span class="muted">Open folder</span>
+                                </div>
+                            </a>
+                        </div>
+                        {% endwith %}
+                    {% endfor %}
+                </div>
+                <div class="files-wrapper">
+                    {% if files %}
+                        <input type="hidden" name="folder_path" value="{{ folder_path }}">
+                        {% for file in files %}
+                        <div class="file-box">
+                            <input class="check-2" type="checkbox" name="selected_files[]" value="{{ file }}">
+                            <div class="file-icon">
+                                {% if file|slice:"-4:" == ".pdf" %}
+                                    <i class="fa-solid fa-file-pdf"></i>
+                                {% elif file|slice:"-4:" == ".csv" %}
+                                    <i class="fa-solid fa-file-csv"></i>
+                                {% elif file|slice:"-4:" == ".fas" %}
+                                    <i class="fa-solid fa-file"></i>
+                                {% elif file|slice:"-6:" == ".fasta" %}
+                                    <i class="fa-solid fa-file-alt"></i>
+                                {% endif %}
+                            </div>
+                            <div class="file-name">{{ file }}</div>
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            {% endif %}
+        </form>
+    </section>
+
+    {% if error_message %}
+        <div class="error-message">{{ error_message }}</div>
+    {% endif %}
+</main>
+
+<script>
+    function confirmAction() {
+        var action = document.querySelector('#batch-action').value;
+        var checkboxes = document.querySelectorAll('input[type="checkbox"][name="selected_files[]"]');
+        var foldersCheckboxes = document.querySelectorAll('input[type="checkbox"][name="selected_folders[]"]');
+        var filesSelected = Array.from(checkboxes).some(checkbox => checkbox.checked);
+        var foldersSelected = Array.from(foldersCheckboxes).some(checkbox => checkbox.checked);
+
+        if (action === 'delete' && (filesSelected || foldersSelected)) {
+            return confirm('Are you sure you want to delete the selected files and folders?');
+        }
+
+        return true; 
+    }
+
+    function selectAll() {
+        const checkboxes = document.querySelectorAll('.check, .check-2');
+        const allChecked = Array.from(checkboxes).every(checkbox => checkbox.checked);
+    
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = !allChecked;
+        });
+    }
+</script>

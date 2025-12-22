@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/load.css' %}">
+</head>
+<body>
+    <!--<div class="container">
+        <div class="circle"></div>
+        <div class="circle"></div>
+        <div class="circle"></div>
+        <div class="circle"></div>
+        <div class="circle"></div>
+        <div class="circle"></div>
+        <div class="circle"></div>
+        <div class="circle"></div>
+        <div class="circle"></div>
+        <div class="circle"></div>
+    </div>-->
+
+    <div class="container">
+        <div class="circle">
+            <div class="auth-mark">G2P</div>
+        </div>
+        <div class="text">Welcome to Eurofins</div>
+    </div>
+
+    <script>
+        function redirectToHome() {
+            window.location.href = "/accounts/home/";
+        }
+        document.querySelector('.text').addEventListener('animationend', function() {
+            setTimeout(redirectToHome, 1000);
+        });
+    </script>
+</body>
+</html>

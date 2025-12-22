@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://kit.fontawesome.com/ccaafbad32.js" crossorigin="anonymous"></script>
+        <title>Registration</title>
+        {% load allauth i18n %}
+        {% load static %}
+        <link rel="stylesheet" href="{% static 'css/padrao.css' %}">
+        <script src="{% static 'js/eye.js' %}"></script>
+    </head>
+
+    <body>
+
+        <div class="container">
+            <div class="forms-container">
+                    
+                    {% url 'account_signup' as action_url %}
+                    {% element form form=form method="post" action=action_url tags="entrance,signup" class="sign-up-form"%}
+                        
+                        {% slot body %}
+                                {% csrf_token %}
+
+                                <div class="auth-mark">G2P</div>
+                                <h2 class="title">{% trans "Create an account" %}</h2>
+                                <h4 class="subtitle">{% trans "Let's get started!" %}</h4>
+      
+
+                                <p class="basic-text">
+                                    {% blocktrans %}Already have an account? Log in. <a href="{{ login_url }}">login</a>.{% endblocktrans %}
+                                </p>
+                                
+                                <div class="input-field">
+                                    <i class="fas fa-user"></i>
+                                    <input type="text" id="username" placeholder="Username" name="username" required>
+                                </div>
+                            
+                                <div class="input-field">
+                                    <i class="fa-solid fa-envelope"></i>
+                                    <input type="email" id="email" placeholder="E-mail" name="email" required>
+                                </div>
+                            
+                                <div class="input-field">
+                                    <i class="fas fa-lock"></i>
+                                    <input type="password" id="id_password" placeholder="Password" name="password1" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="The password must contain at least one number, one lowercase letter, one uppercase letter, and be at least 8 characters long" required>
+                                    <i class="fa-solid fa-eye eye" id="btn-eye" onclick="mostrarSenha()"></i>
+                                </div>
+                                
+
+                                <div class="input-field">
+                                    <i class="fas fa-lock"></i>
+                                    <input type="password" id="confirma_senha" placeholder="Confirm Password" name="password2" required>
+                                </div>
+
+                                {% if redirect_field_value %}
+                                    <input type="hidden"
+                                        name="{{ redirect_field_name }}"
+                                        value="{{ redirect_field_value }}" />
+                                {% endif %}
+
+                        {% endslot %}
+
+                            {% slot actions %}
+                                <div class="button-and-social">
+                                    <button type="submit" class="btn solid">{% trans "Sign Up" %}</button>
+                                    {% if SOCIALACCOUNT_ENABLED %}
+                                    {% include "socialaccount/snippets/login.html" with page_layout="entrance" %}
+                                    {% endif %}
+                                </div>
+                                
+                            {% endslot %}
+
+                            
+                    {% endelement %}
+
+                    {% if form.errors %}
+                        <div class="error-message">
+                            <ul>
+                                {% for error in form.errors.values %}
+                                    {% for err in error %}
+                                        <li>{{ err }}</li>
+                                    {% endfor %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                    
+            </div>
+        
+            <div class="lateral-container">
+                <img src="{% static 'images/4.png' %}" class="image2">
+            </div>
+
+        </div>
+
+</html>

@@ -1,0 +1,173 @@
+{% include 'account/partials/nav.html' with titulo="Settings"%}
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/settings.css' %}">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<main class="page-shell settings-page">
+    <header class="page-header">
+        <div class="header-copy">
+            <p class="eyebrow">Settings</p>
+            <h1>Profile & feedback</h1>
+            <p class="lede">Update your profile details, refresh your avatar, or send quick feedback to the team.</p>
+        </div>
+        <div class="header-actions">
+            <button class="tab-btn active" onclick="showUserSettings()">Profile</button>
+            <button class="tab-btn" onclick="showReportIssue()">Report issue</button>
+            <a class="tab-btn ghost" href="{% url 'account_reset_password' %}">Update password</a>
+        </div>
+    </header>
+
+    <section class="settings-layout">
+        <div class="panel" id="user-settings">
+            <div class="panel-head">
+                <div>
+                    <p class="eyebrow">Profile</p>
+                    <h2>User settings</h2>
+                </div>
+            </div>
+            <form method="post" id="user-settings-form" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="avatar-field">
+                    <div class="upload-btn">
+                        <img id="profile-picture-preview" src="{% if profile_picture %}{{ profile_picture }}{% else %}{% static 'images/default_profile_picture.jpg' %}{% endif %}" alt="Profile Picture">
+                    </div>
+                    <input type="file" id="profile-picture" name="profile_picture" accept="image/*" onchange="previewImage(event)">
+                    <p class="muted">Click the image to replace your avatar.</p>
+                </div>
+
+                {{ form.non_field_errors }}
+                <div class="two-col">
+                    <div class="form-group">
+                        <label for="first-name">First Name</label>
+                        {{ form.firstname }}
+                        {{ form.firstname.errors }}
+                    </div>
+                    <div class="form-group">
+                        <label for="last-name">Last Name</label>
+                        {{ form.lastname }}
+                        {{ form.lastname.errors }}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="address">Address</label>
+                    {{ form.address }}
+                    {{ form.address.errors }}
+                </div>
+                <div class="two-col">
+                    <div class="form-group">
+                        <label for="zip-code">Zip Code</label>
+                        {{ form.zipcode }}
+                        {{ form.zipcode.errors }}
+                    </div>
+                    <div class="form-group">
+                        <label for="city">City</label>
+                        {{ form.city }}
+                        {{ form.city.errors }}
+                    </div>
+                </div>
+                <div class="two-col">
+                    <div class="form-group">
+                        <label for="country">Country</label>
+                        {{ form.country }}
+                        {{ form.country.errors }}
+                    </div>
+                    <div class="form-group">
+                        <label for="department">Department Name</label>
+                        {{ form.department }}
+                        {{ form.department.errors }}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="job-title">Job Title</label>
+                    {{ form.jobtitle }}
+                    {{ form.jobtitle.errors }}
+                </div>
+                <button type="submit" class="btn-primary">Save changes</button>
+            </form>
+        </div>
+
+        <div class="panel" id="report-issue" style="display: none;">
+            <div class="panel-head">
+                <div>
+                    <p class="eyebrow">Feedback</p>
+                    <h2>Report an issue</h2>
+                </div>
+            </div>
+            <form id="report-issue-form">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="issue-type">Issue Type</label>
+                    <select id="issue-type" name="issue_type">
+                        <option value="bug">Bug</option>
+                        <option value="adjustment">Adjustment</option>
+                        <option value="idea">Idea</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="problem-description">Problem Description</label>
+                    <textarea id="problem-description" name="description" rows="4"></textarea>
+                </div>
+                <button type="submit" class="btn-primary">Send feedback</button>
+            </form>
+        </div>
+    </section>
+</main>
+
+<script>
+    function showUserSettings() {
+        document.getElementById('user-settings').style.display = 'block';
+        document.getElementById('report-issue').style.display = 'none';
+        toggleTabs('profile');
+    }
+    
+    function showReportIssue() {
+        document.getElementById('user-settings').style.display = 'none';
+        document.getElementById('report-issue').style.display = 'block';
+        toggleTabs('issue');
+    }
+
+    function toggleTabs(active) {
+        const buttons = document.querySelectorAll('.tab-btn');
+        buttons.forEach(btn => btn.classList.remove('active'));
+        if (active === 'profile') buttons[0].classList.add('active');
+        if (active === 'issue') buttons[1].classList.add('active');
+    }
+
+    function previewImage(event) {
+        var reader = new FileReader();
+        reader.onload = function(){
+            var output = document.getElementById('profile-picture-preview');
+            output.src = reader.result;
+        };
+        reader.readAsDataURL(event.target.files[0]);
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        const uploadBtn = document.querySelector('.upload-btn');
+        uploadBtn.addEventListener('click', function() {
+            document.getElementById('profile-picture').click();
+        });
+
+        $('#report-issue-form').on('submit', function(event) {
+            event.preventDefault();
+
+            $.ajax({
+                type: 'POST',
+                url: '{% url "settings" %}',
+                data: {
+                    'issue_type': $('#issue-type').val(),
+                    'description': $('#problem-description').val(),
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function(response) {
+                    alert(response.message);
+                },
+                error: function(response) {
+                    alert('Erro ao enviar feedback: ' + response.responseJSON.error);
+                }
+            });
+        });
+    });
+    
+</script>

@@ -1,0 +1,141 @@
+{% include 'account/partials/nav.html' with titulo="Submit Reads" %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/submit.css' %}">
+
+<main class="page-shell submit-page">
+    <header class="page-header">
+        <div class="header-copy">
+            <p class="eyebrow">Submit</p>
+            <h1>Upload sequences for Geno2Pheno</h1>
+            <p class="lede">Send .fas/.fa/.fna/.fasta files and we will convert, submit, and generate .pdf/.csv reports for you.</p>
+            <div class="tags">
+                <span class="tag">Supported: .fas .fa .fna .fasta</span>
+                <span class="tag accent">Automated web scraping</span>
+                <span class="tag">Pipeline outputs: fasta, pdf, csv</span>
+            </div>
+        </div>
+        <div class="header-panel">
+            <p class="panel-title">Upload tips</p>
+            <ul>
+                <li>Group related files in one submission to keep logs together.</li>
+                <li>We standardize names and convert non-.fasta files automatically.</li>
+                <li>Keep this tab open until the upload reaches 100%.</li>
+            </ul>
+        </div>
+    </header>
+
+    <section class="layout">
+        <div class="panel upload-card">
+            <h2>Choose files</h2>
+            <p class="body">Drop your sequence files below and monitor progress in real time.</p>
+            <form id="upload-form" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <label for="file-upload" class="custom-file-input">Select files</label>
+                <input id="file-upload" type="file" name="arquivo" accept=".fas,.fa,.fna,.fasta" multiple>
+                <button type="submit" class="btn-primary">Submit</button>
+                
+                {% if mensagem %}
+                    <p class="success-message">{{ mensagem }}</p>
+                {% endif %}
+    
+                {% if erro %}
+                    <p class="error-message">{{ erro }}</p>
+                {% endif %}
+                <p class="error-message" style="display: none;"></p>
+            </form>
+        </div>
+
+        <div class="panel log-card">
+            <div class="log-header">
+                <h3 id="progress-text" style="display: none;">Preparing...</h3>
+                <div class="progress-bar">
+                    <div class="progress"></div>
+                </div>
+            </div>
+            <pre id="log-area">{{ logs }}</pre>
+        </div>
+    </section>
+</main>
+
+{% block scripts %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function(){
+        $('#upload-form').submit(function(event){
+            event.preventDefault();
+            $('#progress-text').show().text('Preparing...');
+            $('.progress-bar').show();
+            
+            var files = $('#file-upload')[0].files;
+            var allowedExtensions = /(\.fas|\.fa|\.fna|\.fasta)$/i;
+            var invalidFiles = [];
+            
+            for (var i = 0; i < files.length; i++) {
+                if (!allowedExtensions.exec(files[i].name)) {
+                    invalidFiles.push(files[i].name);
+                }
+            }
+            
+            if (invalidFiles.length > 0) {
+                $('.error-message').text('Please upload a file in .fas, .fa, .fna or .fasta format.').show();
+                $('#progress-text').hide();
+                $('.progress-bar').hide();
+                return false;
+            } else {
+                $('.error-message').hide();
+            }
+            
+            var formData = new FormData($(this)[0]);
+
+            var progressBar = $('.progress');
+            progressBar.css({width: '0%'});
+            var progressText = $('#progress-text');
+            var percent = 0;
+            var interval = setInterval(function() {
+                if (percent < 80) {
+                    percent += 5;
+                    progressBar.css({width: percent + '%'});
+                    updateProgressText(percent);
+                } else {
+                    clearInterval(interval);
+                }
+            }, 2000);
+
+            $.ajax({
+                url: $(this).attr('action'),
+                type: $(this).attr('method'),
+                data: formData,
+                processData: false,
+                contentType: false,
+                beforeSend: function() {
+                    progressText.text('Uploading files...');
+                },
+                success: function(data){
+                    progressBar.css({width: '100%', transition: 'width 2s linear'});
+                    $('.progress').addClass('progress-success');
+                    progressText.text('Upload complete!');
+                    $('#log-area').html(data.logs);
+                    $('.success-message').text(data.mensagem);
+                },
+                error: function(xhr, status, error){
+                    progressBar.css({width: '100%', transition: 'width 2s linear'});
+                    $('.progress').addClass('progress-error');
+                    progressText.text('Upload failed.');
+                    $('#log-area').html(xhr.responseText);
+                    $('.error-message').text('Submission failed. ' + error).show();
+                }
+            });
+
+            function updateProgressText(percent) {
+                if (percent < 50) {
+                    progressText.text('Uploading files...');
+                } else if (percent < 80) {
+                    progressText.text('Processing...');
+                } else if (percent < 100) {
+                    progressText.text('Almost done...');
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

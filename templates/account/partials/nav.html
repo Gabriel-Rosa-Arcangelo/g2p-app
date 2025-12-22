@@ -1,0 +1,45 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/corpo.css' %}">
+
+<nav class="app-nav">
+    <div class="brand">
+        <div class="brand-mark">G2P</div>
+        <div class="brand-copy">
+            <p class="brand-name">Geno2Pheno Scraper</p>
+            <p class="brand-tagline">Automated upload &amp; reporting</p>
+        </div>
+    </div>
+    <ul class="nav-links hideOnMobile">
+        <li><a href="{% url 'home' %}">Home</a></li>
+        <li><a href="{% url 'submit' %}">Submit Reads</a></li>
+        <li><a href="{% url 'results' %}">Results</a></li>
+        <li><a href="{% url 'settings' %}">Settings</a></li>
+        <li><button type="button" onclick="logout()" class="btn">Logout</button></li>
+    </ul>
+    <button class="menu-button" aria-label="Open menu" onclick="showSidebar()">
+        <span></span><span></span><span></span>
+    </button>
+</nav>
+
+<div class="sidebar" aria-label="Mobile menu">
+    <button class="close-sidebar" onclick="hideSidebar()" aria-label="Close menu">&times;</button>
+    <a href="{% url 'home' %}">Home</a>
+    <a href="{% url 'submit' %}">Submit Reads</a>
+    <a href="{% url 'results' %}">Results</a>
+    <a href="{% url 'settings' %}">Settings</a>
+    <button type="button" onclick="logout()" class="btn-bar">Logout</button>
+</div>
+
+<script>
+    function logout() {
+        window.location.href = '/accounts/logout/';
+    }
+    function showSidebar(){
+        const sidebar = document.querySelector('.sidebar');
+        sidebar.classList.add('open');
+    }
+    function hideSidebar(){
+        const sidebar = document.querySelector('.sidebar');
+        sidebar.classList.remove('open');
+    }
+</script>
