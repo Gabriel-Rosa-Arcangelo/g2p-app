@@ -40,7 +40,7 @@ Prototype UI and upload portal for automating Geno2Pheno submissions with synthe
 - `templates/account/` – redesigned pages (dashboard, submit, results, settings, auth flows).
 - `static/css/` – new dark theme styles.
 - `project/scripts/hiv.py` – submission + scraping pipeline.
-- `docs/prints/` and `docs/results/` – screenshots and sample outputs tracked with the repo.
+- `docs/prints/` – sanitized screenshots tracked with the repo.
 
 ### Using the app
 - **Submit**: upload sequence files, watch the live progress bar, and review logs.
