@@ -1,6 +1,6 @@
 ## G2P Web Scraper – Django UI
 
-Modernized UI and upload portal for automating Geno2Pheno submissions, with screenshots and sample outputs ready for GitHub.
+Prototype UI and upload portal for automating Geno2Pheno submissions with synthetic/test inputs.
 
 ### What it does
 - Upload `.fas`, `.fa`, `.fna`, or `.fasta` files; non-`.fasta` files are converted automatically.
@@ -14,10 +14,6 @@ Modernized UI and upload portal for automating Geno2Pheno submissions, with scre
 ![Settings](docs/prints/4.png)
 ![Auth](docs/prints/5.png)
 ![Profile Picture](docs/prints/6.png)
-
-### Sample outputs
-- PDF: `docs/results/1.pdf`
-- PDF: `docs/results/1.2.pdf`
 
 ### Getting started
 1. Install dependencies in your virtualenv:
@@ -54,3 +50,4 @@ Modernized UI and upload portal for automating Geno2Pheno submissions, with scre
 ### Notes
 - Email confirmation was disabled for uploads.
 - If you see path errors, set `MEDIA_ROOT`, `GECKODRIVER_PATH`, and `TROPISMO_DIR` explicitly in your environment.
+- Do not commit real sample identifiers, sequences, generated reports, credentials, or organization-specific assets.

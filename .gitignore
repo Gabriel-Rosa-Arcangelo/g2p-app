@@ -141,3 +141,10 @@ GitHub.sublime-settings
 !.vscode/launch.json 
 !.vscode/extensions.json 
 .history
+
+# Local runtime and tooling
+.env
+!.env.example
+debug.log
+nohup.out
+geckodriver

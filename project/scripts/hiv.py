@@ -46,7 +46,7 @@ for arquivo_path in arquivos:
 # External dependency: directory that contains pleres_sysgeno_recipiente.py
 folder_tropismo = os.environ.get(
     "TROPISMO_DIR",
-    "/home/catg/Scripts/HIV_Genotype/hiv_genotype/Geno2Pheno_Tropismo/",
+    "",
 )
 temp_file = 'temp_pleres.txt'
 desired_samples = [os.path.basename(file).split('.')[0] for file in arquivos]
@@ -133,7 +133,7 @@ profile.set_preference("browser.download.folderList", 2)
 profile.set_preference("browser.download.manager.showWhenStarting", False)
 profile.set_preference("browser.helperApps.neverAsk.saveToDisk", "application/pdf")
 
-gecko_path = os.environ.get("GECKODRIVER_PATH", str(BASE_DIR / "geckodriver"))
+gecko_path = os.environ.get("GECKODRIVER_PATH", "geckodriver")
 
 # Configure Firefox options with the profile
 options = Options()
