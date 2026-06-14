@@ -12,7 +12,7 @@ import re
 import pandas as pd
 import subprocess
 import logging
-from PyPDF2 import PdfReader, PdfWriter
+from pypdf import PdfReader, PdfWriter
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 from io import BytesIO
