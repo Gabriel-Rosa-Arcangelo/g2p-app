@@ -11,5 +11,5 @@ urllib3==2.7.0
 Pillow==12.2.0
 python-dotenv==1.2.2
 PyJWT==2.13.0
-cryptography==46.0.7
+cryptography==48.0.1
 chardet==5.2.0
